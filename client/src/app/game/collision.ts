@@ -6,6 +6,11 @@ class Collision {
 	serial = 0;
 
 	tick() {
+		this.serial++;
+		if (config.debug && this.serial > 6) {
+			return;
+		}
+		// console.log(this.serial);
 		const show = Math.random() > 0.5;
 		this.checkBox(show);
 		this.checkBox(!show);
@@ -13,54 +18,31 @@ class Collision {
 	}
 
 	checkBox(show: boolean) {
+		if (!show && config.debug) {
+			return;
+		}
 		const b = show ? gameMap.ballA : gameMap.ballB;
-		const rx = Math.floor(b.x);
-		const checkX = b.x - rx;
-		const x = [rx];
-		let cx = true;
-		if (b.speedX < 0 && checkX <= config.r) {
-			x.push(rx - 1);
-		} else if (b.speedX > 0 && checkX >= (1 - config.r)) {
-			x.push(rx + 1);
-		} else {
-			cx = false;
-		}
-		const ry = Math.floor(b.y);
-		const checkY = b.y - ry;
-		const y = [ry];
-		let cy = true;
-		if (b.speedY < 0 && checkY <= config.r) {
-			y.push(ry - 1);
-		} else if (b.speedY > 0 && checkY >= (1 - config.r)) {
-			y.push(ry + 1);
-		} else {
-			cy = false;
-		}
-		if (!cx && !cy) {
+
+		const [x, xn] = this.checkBoxOneAxis(b.x, b.speedX);
+		const [y, yn] = this.checkBoxOneAxis(b.y, b.speedY);
+		if (xn === 0 && yn === 0) {
 			return;
 		}
 
 		let isCollX = false;
 		let isCollY = false;
-		for (const tx of x) {
-			for (const ty of y) {
-				const box = gameMap.getBox(tx, ty);
-				if (!box) {
-					continue;
-				}
-				if (box.show != show) {
-					continue;
-				}
-				if (cx) {
-					box.show = !show;
-					isCollX = true;
-				}
-				if (cy) {
-					box.show = !show;
-					isCollY = true;
-				}
-			}
+
+		if (xn != 0) {
+			isCollX = this.checkBoxPoint(x + xn, y, show);
 		}
+		if (yn != 0) {
+			isCollY = this.checkBoxPoint(x, y + yn, show);
+		}
+		// console.log(isCollX, isCollY);
+		if (!isCollX && !isCollY) {
+			isCollY = isCollX = this.checkBoxPoint(x + xn, y + yn, show);
+		}
+
 		if (isCollX) {
 			b.speedX *= -1;
 			b.x += b.speedX;
@@ -72,7 +54,7 @@ class Collision {
 	}
 
 	checkBoundary() {
-		for (const b of [gameMap.ballA, gameMap.ballB]) {
+		for (const b of gameMap.ball()) {
 			b.x += b.speedX;
 			if (b.x < config.r || b.x > (config.w - config.r)) {
 				b.speedX *= -1;
@@ -84,6 +66,30 @@ class Collision {
 				b.x += b.speedX;
 			}
 		}
+	}
+
+	checkBoxOneAxis(axis: number, speed: number) {
+		const f = Math.floor(axis);
+		const check = axis - f;
+		let an = 0;
+		if (speed < 0 && check <= config.r) {
+			an = -1;
+		} else if (speed > 0 && check >= (1 - config.r)) {
+			an = 1;
+		}
+		return [f, an];
+	}
+
+	checkBoxPoint(x: number, y: number, show: boolean) {
+		const box = gameMap.getBox(x, y);
+		if (!box) {
+			return false;
+		}
+		const re = box.show == show;
+		if (re) {
+			box.show = !show;
+		}
+		return re;
 	}
 }
 

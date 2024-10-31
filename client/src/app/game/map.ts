@@ -46,6 +46,13 @@ class GameMap {
 		this.init();
 	}
 
+	ball() {
+		if (config.debug) {
+			return [this.ballA];
+		}
+		return [this.ballA, this.ballB];
+	}
+
 	init() {
 		for (let y = 0; y < config.h; y++) {
 			for (let x = 0; x < config.w; x++) {
@@ -62,8 +69,7 @@ class GameMap {
 			}
 		}
 
-		for (const b of [this.ballA, this.ballB]) {
-
+		for (const b of this.ball()) {
 			let rx = Math.random() * config.w;
 			let ry = Math.random() * config.h;
 			if (config.debug) {
@@ -73,16 +79,26 @@ class GameMap {
 
 			b.x = rx;
 			b.y = ry;
-
-			let round = [-1, 0, 1];
 			if (config.debug) {
-				round = [0];
-			}
-			for (const ox of round) {
-				for (const oy of round) {
-					const box = this.getBox(rx + ox, ry + oy);
+				const li = [
+					[1, 0],
+					[1, 1],
+					[1, 2],
+				];
+				for (const [x, y] of li) {
+					const box = this.getBox(x, y);
 					if (box) {
 						box.show = false;
+					}
+				}
+			} else {
+				const round = [-1, 0, 1];
+				for (const ox of round) {
+					for (const oy of round) {
+						const box = this.getBox(rx + ox, ry + oy);
+						if (box) {
+							box.show = false;
+						}
 					}
 				}
 			}

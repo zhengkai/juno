@@ -51,7 +51,7 @@ export class GameService {
 			bc.addChild(g);
 		}
 
-		for (const b of [gameMap.ballA, gameMap.ballB]) {
+		for (const b of gameMap.ball()) {
 			const g = b.g;
 			g.circle(0, 0, screen.grid * config.r).fill(b.color).stroke({ width: 0 });
 			app.stage.addChild(g);
@@ -73,7 +73,7 @@ export class GameService {
 		for (const box of gameMap.list) {
 			box.g.visible = box.show;
 		}
-		for (const b of [gameMap.ballA, gameMap.ballB]) {
+		for (const b of gameMap.ball()) {
 			const [x, y] = screen.pos(b.x, b.y);
 			b.g.position.set(x, y);
 		}
