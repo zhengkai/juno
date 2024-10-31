@@ -1,5 +1,6 @@
 import { config } from './config';
 import { Graphics } from 'pixi.js';
+import { util } from './util';
 
 export interface Box {
 	x: number;
@@ -18,32 +19,47 @@ export interface Ball {
 	speedY: number;
 }
 
-class GameMap {
-
-	list: Box[] = [];
-
-	ballA: Ball = {
+function newBall() {
+	return <Ball>{
 		x: 0,
 		y: 0,
 		show: true,
 		g: new Graphics(),
-		color: config.colorA,
-		speedX: - config.speed / config.fps,
-		speedY: - config.speed / config.fps * 1.01,
+		speedX: 0,
+		speedY: 0,
 	};
+}
 
-	ballB: Ball = {
-		x: 0,
-		y: 0,
-		show: false,
-		g: new Graphics(),
-		color: config.colorB,
-		speedX: - config.speed / config.fps * 1.01,
-		speedY: - config.speed / config.fps,
-	};
+class GameMap {
+
+	list: Box[] = [];
+
+	ballA = newBall();
+	ballB = newBall();
 
 	constructor() {
 		this.init();
+
+		this.ballA.color = config.colorA;
+		this.ballB.color = config.colorB;
+
+		for (const b of this.ball()) {
+			b.speedX = util.randSpeed();
+			if (util.randBool()) {
+				b.speedX = -b.speedX;
+			}
+			b.speedY = util.otherSpeed(b.speedX);
+			if (util.randBool()) {
+				b.speedY = -b.speedY;
+			}
+		}
+
+		if (config.debug) {
+			for (const b of this.ball()) {
+				b.speedX = - Math.sqrt(0.5);
+				b.speedY = - Math.sqrt(0.5);
+			}
+		}
 	}
 
 	ball() {
@@ -70,17 +86,20 @@ class GameMap {
 		}
 
 		for (const b of this.ball()) {
+
 			let rx = Math.random() * config.w;
 			let ry = Math.random() * config.h;
 			if (config.debug) {
 				rx = 1.5;
-				ry = 1.5;
+				ry = 1.2;
 			}
+			// console.log(rx, ry);
 
 			b.x = rx;
 			b.y = ry;
 			if (config.debug) {
 				const li = [
+					[0, 0],
 					[1, 0],
 					[1, 1],
 					[1, 2],
