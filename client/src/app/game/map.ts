@@ -11,7 +11,7 @@ export interface Box {
 export interface Ball {
 	x: number;
 	y: number;
-	show: boolean;
+	color: number;
 	g: Graphics;
 	speedX: number;
 	speedY: number;
@@ -21,13 +21,22 @@ class GameMap {
 
 	list: Box[] = [];
 
-	ball: Ball = {
+	ballA: Ball = {
 		x: 0,
 		y: 0,
-		show: true,
 		g: new Graphics(),
-		speedX: config.speed / config.fps,
-		speedY: config.speed / config.fps,
+		color: config.colorA,
+		speedX: - config.speed / config.fps,
+		speedY: - config.speed / config.fps,
+	};
+
+	ballB: Ball = {
+		x: 0,
+		y: 0,
+		color: config.colorB,
+		g: new Graphics(),
+		speedX: - config.speed / config.fps,
+		speedY: - config.speed / config.fps,
 	};
 
 	constructor() {
@@ -43,29 +52,52 @@ class GameMap {
 					show: Math.random() > 0.5,
 					g: new Graphics(),
 				};
+				if (config.debug) {
+					box.show = true;
+				}
 				this.list.push(box);
 			}
 		}
 
-		const rx = Math.floor(Math.random() * config.w);
-		const ry = Math.floor(Math.random() * config.h);
+		for (const b of [this.ballA, this.ballB]) {
 
-		const b = this.ball;
-		b.x = rx + 0.5;
-		b.y = ry + 0.5;
+			let rx = Math.random() * config.w;
+			let ry = Math.random() * config.h;
+			if (config.debug) {
+				rx = 1.5;
+				ry = 1.5;
+			}
 
-		const round = [-1, 0, 1];
-		for (const ox of round) {
-			for (const oy of round) {
-				const box = this.getBox(rx + ox, ry + oy);
-				box.show = false;
+			b.x = rx;
+			b.y = ry;
+
+			let round = [-1, 0, 1];
+			if (config.debug) {
+				round = [0];
+			}
+			for (const ox of round) {
+				for (const oy of round) {
+					const box = this.getBox(rx + ox, ry + oy);
+					if (box) {
+						box.show = false;
+					}
+				}
 			}
 		}
 	}
 
-	getBox(x: number, y: number) {
-		x = Math.max(0, Math.min(config.w - 1, x));
-		y = Math.max(0, Math.min(config.h - 1, y));
+	getBox(x: number, y: number): Box|null {
+		if (x < 0 || y < 0) {
+			return null;
+		}
+		x = Math.floor(x);
+		if (x >= config.w) {
+			return null;
+		}
+		y = Math.floor(y);
+		if (y >= config.h) {
+			return null;
+		}
 		return this.list[y * config.w + x];
 	}
 }
