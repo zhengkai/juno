@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Application, Graphics } from 'pixi.js';
+import { Application, Container, Graphics } from 'pixi.js';
 import { gameMap } from './map';
 import { screen } from './screen';
 import { config } from './config';
@@ -35,17 +35,20 @@ export class GameService {
 
 		screen.cal();
 
-		const back = new Graphics();
+		const bc = new Container();
 		const [x, y] = screen.pos(0, 0);
-		back.rect(x, y, screen.grid * config.w, screen.grid * config.h).fill(config.colorB).stroke({ width: 0 });
-		app.stage.addChild(back);
+		bc.position.set(x, y);
+		app.stage.addChild(bc);
+
+		const back = new Graphics();
+		back.rect(0, 0, screen.grid * config.w, screen.grid * config.h).fill(config.colorB).stroke({ width: 0 });
+		bc.addChild(back);
 
 		for (const box of gameMap.list) {
 			const g = box.g;
-			const [x, y] = screen.pos(box.x, box.y);
-			g.rect(x, y, screen.grid, screen.grid).fill(config.colorA).stroke({ width: 0 });
+			g.rect(box.x * screen.grid, box.y * screen.grid, screen.grid, screen.grid).fill(config.colorA).stroke({ width: 0 });
 			g.visible = box.show;
-			back.addChild(g);
+			bc.addChild(g);
 		}
 
 		for (const b of [gameMap.ballA, gameMap.ballB]) {

@@ -11,6 +11,7 @@ export interface Box {
 export interface Ball {
 	x: number;
 	y: number;
+	show: boolean;
 	color: number;
 	g: Graphics;
 	speedX: number;
@@ -24,18 +25,20 @@ class GameMap {
 	ballA: Ball = {
 		x: 0,
 		y: 0,
+		show: true,
 		g: new Graphics(),
 		color: config.colorA,
 		speedX: - config.speed / config.fps,
-		speedY: - config.speed / config.fps,
+		speedY: - config.speed / config.fps * 1.01,
 	};
 
 	ballB: Ball = {
 		x: 0,
 		y: 0,
-		color: config.colorB,
+		show: false,
 		g: new Graphics(),
-		speedX: - config.speed / config.fps,
+		color: config.colorB,
+		speedX: - config.speed / config.fps * 1.01,
 		speedY: - config.speed / config.fps,
 	};
 

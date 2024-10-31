@@ -18,9 +18,10 @@ init:
 	# cp node_modules/@popperjs/core/dist/umd/popper.min.js* src/assets
 
 prod:
-	./dist/build.sh lumos.diandian.info/muggle/ prod
-	ssh casca 'mkdir -p /www/orca/prod'
-	rsync --partial -vzrtopg -e ssh ./dist/prod/browser/ casca:/www/orca/prod
+	./dist/build.sh w-juno.pages.dev prod
+	./dist/cp.sh
+	# ssh casca 'mkdir -p /www/orca/prod'
+	# rsync --partial -vzrtopg -e ssh ./dist/prod/browser/ casca:/www/orca/prod
 
 preview:
 	./dist/build.sh lumos-preview.diandian.info/muggle/ preview
