@@ -5,7 +5,7 @@ class Util {
 	}
 
 	randSpeed(speed = 1) {
-		return Math.random() * 0.9 * speed;
+		return (Math.random() * 0.75 + 0.125) * speed;
 	}
 
 	otherSpeed(speed: number, original: number = 1) {

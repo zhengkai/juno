@@ -12,8 +12,6 @@ export class GameComponent {
 	constructor(
 		private gs: GameService,
 	) {
-		if (!this.gs.app) {
-			console.log(this.gs);
-		}
+		this.gs.noop();
 	}
 }

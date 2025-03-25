@@ -1,9 +1,9 @@
 class Config {
-	w = 16 * 2;
-	h = 9 * 2;
+	w = 21;
+	h = 15;
 	r = 0.24;
 	fps = 120;
-	speed = 10;
+	speed = 20;
 
 	vector = 2;
 
@@ -21,6 +21,7 @@ class Config {
 			this.h = 9;
 		}
 		this.speed /= this.fps;
+
 	}
 }
 
